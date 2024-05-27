@@ -16,12 +16,12 @@ namespace Notes3
     {
         private class Data
         {
-            public string Title { get; set; }
-            public string Notes { get; set; }
+            public string Title { get; set; }//this set the Title of the note
+            public string Notes { get; set; }//Get and set the main notes
         }
-        List<Data> rows = new List<Data>();
-        DataTable notes = new DataTable();
-        bool editing = false;
+        List<Data> rows = new List<Data>();//To list the rows in the datagridview
+        DataTable notes = new DataTable();//get the title and the notes
+        bool editing = false;//for editing the title andf the notes
         public Form1()
         {
             InitializeComponent();
@@ -29,76 +29,76 @@ namespace Notes3
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            notes.Columns.Add("Title");
-            notes.Columns.Add("Note");
+            notes.Columns.Add("Title");//Add and set the title to the data table
+            notes.Columns.Add("Note");//add and set the notes to the data table
 
-            if (File.Exists("datanotes.json"))
+            if (File.Exists("datanotes.json"))//check if the file is existing
             {
-                var filejson = File.ReadAllText("datanotes.json");
-                var storage = JsonSerializer.Deserialize<List<Data>>(filejson);
+                var filejson = File.ReadAllText("datanotes.json");//read the files to deserialize
+                var storage = JsonSerializer.Deserialize<List<Data>>(filejson);//deserialize the file 
 
-                if (storage != null)
+                if (storage != null)//check if the file is null
                 {
-                    foreach (var item in storage)
+                    foreach (var item in storage)//get the variables in the file 
                     {
-                        notes.Rows.Add(item.Title, item.Notes);
+                        notes.Rows.Add(item.Title, item.Notes);//add the variable to the DataTable to present in the gridview
                     }
                 }
             }
 
-            previousnotes.DataSource = notes;
+            previousnotes.DataSource = notes;//to show the data to the grid view
         }
        
 
 
-        private void DeleteBtn_Click(object sender, EventArgs e)
+        private void DeleteBtn_Click(object sender, EventArgs e)//delete the value to the gridview
         {
             try
             {
-                notes.Rows[previousnotes.CurrentCell.RowIndex].Delete();
+                notes.Rows[previousnotes.CurrentCell.RowIndex].Delete();//delte the selected item in tthe grid view and the nnotes
             }
-            catch (Exception ex) { Console.WriteLine("Not a valid note"); }
+            catch (Exception ex) { Console.WriteLine("Not a valid note"); }//if there's no notes
         }
-        private void LoadBtn_Click(object sender, EventArgs e)
+        private void LoadBtn_Click(object sender, EventArgs e)//load the btn to the textboxes 
         {
-            if(previousnotes.CurrentCell != null)
+            if(previousnotes.CurrentCell != null)//check if the notes is empty
             {
-                TxtBxTitle.Text = notes.Rows[previousnotes.CurrentCell.RowIndex].ItemArray[0].ToString();
-                TxtBxNotes.Text = notes.Rows[previousnotes.CurrentCell.RowIndex].ItemArray[1].ToString();
+                TxtBxTitle.Text = notes.Rows[previousnotes.CurrentCell.RowIndex].ItemArray[0].ToString();//load the title to the title text box
+                TxtBxNotes.Text = notes.Rows[previousnotes.CurrentCell.RowIndex].ItemArray[1].ToString();//load the notes to the notes text box
 
-                editing = true;
+                editing = true;//set the editing to true to change the values of the selected variable on the gridview 
             }
         }
-        private void NewNotesBtn_Click(object sender, EventArgs e)
+        private void NewNotesBtn_Click(object sender, EventArgs e)//set the loaded variable to empty
         {
             TxtBxTitle.Text = "";
             TxtBxNotes.Text = "";
         }
 
-        private void SaveBtn_Click(object sender, EventArgs e)
+        private void SaveBtn_Click(object sender, EventArgs e)//save the variable to tthe grid view and set it to the notes or the DataTable
         {
-            if (editing)
+            if (editing)//if the editing is true the title and notes will be changed 
             {
                 notes.Rows[previousnotes.CurrentCell.RowIndex]["Title"] = TxtBxTitle.Text;
                 notes.Rows[previousnotes.CurrentCell.RowIndex]["Note"] = TxtBxNotes.Text;
 
             }
-            else 
+            else //if the editing is false the title on the textbox and the note will be saved to the DataTable
             {
                 notes.Rows.Add(TxtBxTitle.Text, TxtBxNotes.Text);
                 
             }
-            TxtBxTitle.Text = "";
+            TxtBxTitle.Text = "";//Automatically set the text boxes to blank
             TxtBxNotes.Text = "";
-            editing = false;
+            editing = false;//set the editing to false
         }
 
-        private void previousnotes_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void previousnotes_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)//not really needed just accidentally clicked
         {
 
         }
 
-        private void previousnotes_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void previousnotes_CellDoubleClick(object sender, DataGridViewCellEventArgs e)//if the user double clicked the row the selected row will be seen to the text boxes
         {
             if (e.RowIndex >= 0 && e.RowIndex < notes.Rows.Count)
             {
@@ -106,43 +106,46 @@ namespace Notes3
                 TxtBxNotes.Text = notes.Rows[e.RowIndex]["Note"].ToString();
                 editing = true;
             }
-                //TxtBxTitle.Text = notes.Rows[previousnotes.CurrentCell.RowIndex].ItemArray[0].ToString();
-                //TxtBxNotes.Text = notes.Rows[previousnotes.CurrentCell.RowIndex].ItemArray[1].ToString();
-
-                //editing = true;
         }
 
-            private void Exitbtn_Click(object sender, EventArgs e)
+            private void Exitbtn_Click(object sender, EventArgs e)//if the user exit the software the rows on data grid will be saved to the json file
         {
 
-            List<Data> rows = new List<Data>();
-
-            foreach (DataRow row in notes.Rows)
+            foreach (DataRow row in notes.Rows)//get the values of the rows
             {
-                if (row.RowState != DataRowState.Deleted)
+                if (row.RowState != DataRowState.Deleted)//check if the row is not empty and the rows are not deleted
                 {
                     rows.Add(new Data
                     {
                         Title = row["Title"].ToString(),
                         Notes = row["Note"].ToString()
-                    });
+                    });//set the title and the notes to string and save it to the list
                 }
             }
 
             var option = new JsonSerializerOptions();
 
-            option.WriteIndented = true;
+            option.WriteIndented = true;//this id the option that make the variables on the json file readable
 
-            string json = JsonSerializer.Serialize(rows, option);
-            File.WriteAllText("datanotes.json", json);
+            string json = JsonSerializer.Serialize(rows, option);//serialize the variables on the row
+            File.WriteAllText("datanotes.json", json);//write the variable to the json file
 
-            Environment.Exit(Environment.ExitCode);
+            Environment.Exit(Environment.ExitCode);//exit to the code
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)//Actually wala tong kwenta di ko alam kung bat ko to nilagay
         {
-            this.Hide();
-            this.WindowState = FormWindowState.Normal;
+            this.Hide();//hide the form
+            this.WindowState = FormWindowState.Normal;//idk
         }
     }
 }
+/* This features save the notes of the user. You can set the title of the notes and the main notes to this. You can save, deleta, and set as new note.
+ * This feature use a json file that save the existing variaable to it.
+ * 
+ * Errors encountered:
+ * * I set the wrong syntax
+ * * set the main code to .net framework
+ * *having a big problem on how to save to the json
+ * *to many logical error(one time yung column ang na dagdag ehh dapat yung rows)
+  */
