@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Text.Json;
+
 namespace Notes3
 {
     public partial class Form1 : Form
@@ -53,11 +54,11 @@ namespace Notes3
 
         private void DeleteBtn_Click(object sender, EventArgs e)//delete the value to the gridview
         {
-            try
+            if (previousnotes.CurrentCell == null)
             {
-                notes.Rows[previousnotes.CurrentCell.RowIndex].Delete();//delte the selected item in tthe grid view and the nnotes
+                MessageBox.Show("Invalid Activity");
             }
-            catch (Exception ex) { Console.WriteLine("Not a valid note"); }//if there's no notes
+            else { notes.Rows[previousnotes.CurrentCell.RowIndex].Delete(); }
         }
         private void LoadBtn_Click(object sender, EventArgs e)//load the btn to the textboxes 
         {
@@ -71,11 +72,30 @@ namespace Notes3
         }
         private void NewNotesBtn_Click(object sender, EventArgs e)//set the loaded variable to empty
         {
-            TxtBxTitle.Text = "";
-            TxtBxNotes.Text = "";
+            //TxtBxTitle.Text = "";
+            //TxtBxNotes.Text = "";
+            foreach (DataRow row in notes.Rows)//get the values of the rows
+            {
+                if (row.RowState != DataRowState.Deleted)//check if the row is not empty and the rows are not deleted
+                {
+                    rows.Add(new Data
+                    {
+                        Title = row["Title"].ToString(),
+                        Notes = row["Note"].ToString()
+                    });//set the title and the notes to string and save it to the list
+                }
+            }
+
+            var option = new JsonSerializerOptions();
+
+            option.WriteIndented = true;//this id the option that make the variables on the json file readable
+
+            string json = JsonSerializer.Serialize(rows, option);//serialize the variables on the row
+            File.WriteAllText("datanotes.json", json);//write the variable to the json file
         }
 
         private void SaveBtn_Click(object sender, EventArgs e)//save the variable to tthe grid view and set it to the notes or the DataTable
+
         {
             if (editing)//if the editing is true the title and notes will be changed 
             {
@@ -111,24 +131,7 @@ namespace Notes3
             private void Exitbtn_Click(object sender, EventArgs e)//if the user exit the software the rows on data grid will be saved to the json file
         {
 
-            foreach (DataRow row in notes.Rows)//get the values of the rows
-            {
-                if (row.RowState != DataRowState.Deleted)//check if the row is not empty and the rows are not deleted
-                {
-                    rows.Add(new Data
-                    {
-                        Title = row["Title"].ToString(),
-                        Notes = row["Note"].ToString()
-                    });//set the title and the notes to string and save it to the list
-                }
-            }
-
-            var option = new JsonSerializerOptions();
-
-            option.WriteIndented = true;//this id the option that make the variables on the json file readable
-
-            string json = JsonSerializer.Serialize(rows, option);//serialize the variables on the row
-            File.WriteAllText("datanotes.json", json);//write the variable to the json file
+            
 
             Environment.Exit(Environment.ExitCode);//exit to the code
         }
@@ -140,7 +143,7 @@ namespace Notes3
         }
     }
 }
-/* This features save the notes of the user. You can set the title of the notes and the main notes to this. You can save, deleta, and set as new note.
+/* This features save the notes of the user. You can set the title of the notes and the main notes to this. You can save, delete, and set as new note.
  * This feature use a json file that save the existing variaable to it.
  * 
  * Errors encountered:

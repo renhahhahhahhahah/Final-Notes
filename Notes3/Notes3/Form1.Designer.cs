@@ -131,7 +131,7 @@
             NewNotesBtn.Name = "NewNotesBtn";
             NewNotesBtn.Size = new Size(208, 55);
             NewNotesBtn.TabIndex = 7;
-            NewNotesBtn.Text = "New Notes";
+            NewNotesBtn.Text = "Save all";
             NewNotesBtn.UseVisualStyleBackColor = false;
             NewNotesBtn.Click += NewNotesBtn_Click;
             // 
@@ -154,7 +154,7 @@
             Exitbtn.BackColor = Color.Purple;
             Exitbtn.FlatStyle = FlatStyle.Popup;
             Exitbtn.Font = new Font("Gill Sans Ultra Bold", 9.75F, FontStyle.Italic, GraphicsUnit.Point, 0);
-            Exitbtn.Location = new Point(758, 9);
+            Exitbtn.Location = new Point(759, 10);
             Exitbtn.Name = "Exitbtn";
             Exitbtn.Size = new Size(30, 23);
             Exitbtn.TabIndex = 9;
